@@ -9,6 +9,9 @@
 SendMode Input ; Recommended for new scripts due to its superior speed and reliability.
 SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 
+Menu, Tray, Icon, D:\Neel's Folder\Auto Hotkey Scripts\Icon\clock.ico
+
+thisHour := 0
 _Hour := 0
 _Min := 0
 _Link := ""
@@ -33,12 +36,13 @@ If (!_Link){
 ButtonOK:
     Gui, Submit 
     Gui, Destroy
-    TrayTip, Lecture Launcher, Lecture at %_Hour%:%_Min%, 3600
+    Menu, Tray, Tip, Lecture at %_Hour%:%_Min%
 Return
 
 Timer:
-    if (A_Hour = _Hour && A_Min >= _Min) {
-        if (%_Link% = teams)
+    FormatTime, thisHour,, h
+    if (thisHour = _Hour && A_Min >= _Min) {
+        if (InStr(_Link, "teams"))
         {
             ; Launch Teams
             Run, "C:\Users\Neel Basak\AppData\Local\Microsoft\Teams\Update.exe" --processStart "Teams.exe"

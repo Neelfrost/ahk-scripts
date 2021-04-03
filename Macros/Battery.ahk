@@ -12,7 +12,6 @@ SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 Menu, Tray, Icon, D:\Neel's Folder\Auto Hotkey Scripts\Icon\battery.ico
 
 notificationShown := False
-adobeLaunched := False
 batteryLife := 0
 toggle := False
 
@@ -45,19 +44,5 @@ Battery:
     else
     {
         notificationShown := False
-    }
-
-    ; Coroutine to stop misc. adobe exes
-    if (WinExist("ahk_exe Photoshop.exe") || WinExist("ahk_exe Adobe Premiere Pro.exe"))
-    {
-        adobeLaunched := True
-        Return
-    }
-    else if (adobeLaunched)
-    {
-        Process, Close, AdobeIPCBroker.exe
-        Process, Close, CCLibrary.exe
-        Process, Close, CCXProcess.exe
-        adobeLaunched := False
     }
 Return

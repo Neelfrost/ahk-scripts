@@ -31,11 +31,16 @@ OnClipboardChange("Torrent")
 Return
 
 ; #region global hotkeys
-; Center active window on scrolllock
+; Center active window on Scroll Lock
 ScrollLock::CenterActiveWindow()
 
 ; Rebind Mouse 4 to Middle Mouse button
 XButton1:: MButton
+
+; Maximize on Win+Shift+Up
+; Minimize on Win+Shift+Down
+#+Up::WinMaximize, A
+#+Down::WinMinimize, A
 
 ; Rebind Capslock to Esc for vim, shift + capslock for normal capslock
 CapsLock::Esc
@@ -76,13 +81,19 @@ Return
     Sendinput {Blind}{sc0E9}
     KeyWait, RAlt ; so that it doesn't keep spamming SC0E9
 Return
+; #endregion
 
+; Fix unintended behavior in neovide
+#IfWinNotActive, ahk_exe neovide.exe
 ; Delete word before cursor on ctrl + backspace
 ^BackSpace::
     Send, ^+{Left}{Del}
 Return
 
-; #endregion
+^Delete::
+Send, ^+{Right}{Del}
+Return 
+#IfWinNotActive
 
 ; #region Functions
 ; Added torrent to qbittorrent client using qbt-cli
@@ -112,7 +123,7 @@ CenterActiveWindow()
         ; Get the window handle from de active window.
         winHandle := WinExist("A")
 
-        ; Get active window's widht and height
+        ; Get active window's width and height
         WinGetPos, tempX, tempY, winW, winH, A
 
         VarSetCapacity(monitorInfo, 40)
@@ -217,68 +228,3 @@ Return
 
 ; Reset Application specific macros
 #IfWinActive
-
-; #region Experimental Vim Mode
-; Vim like hjkl movement
-ToggleVim := False
-$`::
-    ; waits for a double tap
-    KeyWait, ``
-    KeyWait, ``, D T0.2
-    if (ErrorLevel)
-    {
-        Send, ``
-    }
-    else
-    {
-        ToggleVim := !ToggleVim
-    }
-
-    if (ToggleVim)
-        ToolTip, Vim Mode On, 795, 0
-    else
-        ToolTip,
-Return
-
-#if (ToggleVim)
-{
-    k::Up
-    j::Down
-    h::Left
-    l::Right
-}
-#if
-; #endregion
-
-; #region Old LaTeX Macros
-; ; Add ch : ctrl + ins
-; ^Insert::
-;     Send, {{}
-;     Send, {Left}{Left}
-;     Send, {Text}\ch
-;     Sleep, 300
-;     Send, {Esc}
-; Return
-
-; ; Add emph : alt  + ins
-; !Insert::
-;     Send, ^l^e
-; Return
-
-; ; Add new line \item : shift + ins
-; +Insert::
-;     Send, ^l^{Enter}
-; Return
-
-; ; Insert subscript : ctrl + 1
-; ^1::
-;     Send, {Text}_{}
-;     Send, {Left}
-; Return
-
-; ; Insert supercript : ctrl + 2
-; ^2::
-;     Send, {Text}^{}
-;     Send, {Left}
-; Return
-; #endregion
