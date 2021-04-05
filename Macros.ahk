@@ -1,5 +1,5 @@
 ; ---------------------------------------------------------------------------- ;
-;                         Collection of everyday macros                        ;
+;                         Collection of macros                        ;
 ; ---------------------------------------------------------------------------- ;
 
 #Persistent
@@ -13,6 +13,9 @@ SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 ; #InstallMouseHook
 ; #InstallKeybdHook
 ; # : Win, ! : Alt, ^ : Control, + : Shift
+
+GroupAdd, DelWord, ahk_exe neovide.exe
+GroupAdd, DelWord, ahk_exe Photoshop.exe
 
 ; Check if admin, if not re-run as admin
 if not A_IsAdmin
@@ -83,8 +86,8 @@ Return
 Return
 ; #endregion
 
-; Fix unintended behavior in neovide
-#IfWinNotActive, ahk_exe neovide.exe
+; Fix unintended behavior in neovide, photoshop
+#IfWinNotActive, ahk_group DelWord
 ; Delete word before cursor on ctrl + backspace
 ^BackSpace::
     Send, ^+{Left}{Del}

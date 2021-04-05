@@ -4,16 +4,24 @@ SendMode Input ; Recommended for new scripts due to its superior speed and relia
 SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 #MaxThreadsPerHotkey, 2
 
+CoordMode, ToolTip, Client 
+
 SetTimer, Close, 1000
 Toggle := False
+
 
 #IfWinActive, ahk_exe Warframe.x64.exe
 Media_Play_Pause::
 Suspend
 
 ; Spam Spores on `
-~`::
+`::
     Toggle := !Toggle
+
+    If (Toggle)
+        ToolTip, Toggle On, 4, 4
+    Else
+        ToolTip
 
     While(Toggle)
     {

@@ -11,8 +11,9 @@ SetTimer, Close, 1000
 Media_Play_Pause::
 Suspend
 
-; Place All Motes on `
-`::
+; Place All Motes on 1
+; Modifier key (shift, ctrl, alt) + 1 uses default behavior
+$1::
     Loop, 3
     {
         Send, {1 down}

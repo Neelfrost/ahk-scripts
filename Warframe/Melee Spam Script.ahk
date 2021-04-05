@@ -4,6 +4,8 @@ SendMode Input ; Recommended for new scripts due to its superior speed and relia
 SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 #MaxThreadsPerHotkey, 2
 
+CoordMode, ToolTip, Client
+
 SetTimer, Close, 1000
 Toggle := False
 
@@ -23,15 +25,22 @@ $e::
 Return
 
 ; Press ` to toggle melee spam
-~`::
+`::
     Toggle := !Toggle
+
+    If (Toggle)
+        ToolTip, Toggle On, 4, 4
+    Else
+        ToolTip
 
     While (Toggle)
     {
         Send, e
         Sleep, 50 ; 50 millisecond delay between each press
     }
+
 Return
+
 #IfWinActive
 
 Close:
