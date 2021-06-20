@@ -1,19 +1,22 @@
-#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
-; #Warn  ; Enable warnings to assist with detecting common errors.
-SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
-SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
+; ---------------------------------------------------------------------------- ;
+;                       Octavia crouch spam, ability spam                      ;
+; ---------------------------------------------------------------------------- ;
 
-;Icon
-Menu, Tray, Icon, % "D:\Neel's Folder\OctaviaOn.ico"
+#MaxThreadsPerHotkey, 2
+#NoEnv
+SendMode Input
+SetWorkingDir %A_ScriptDir%
+
+; Coroutine to kill script if Warframe is closed
 SetTimer, Close, 1000
+Return
 
 #IfWinActive, ahk_exe Warframe.x64.exe
 
 ; Suspend Script
-Media_Play_Pause::
-Suspend
+Media_Play_Pause::Suspend
 
-; Spam Crouch on Mouse 4
+; Spam crouch on mouse 4
 XButton1::
     Loop, 5
     {
@@ -24,16 +27,17 @@ XButton1::
     }
 Return
 
-; Press All abilities on `
+; Press all abilities on `
 `::
     Send, 1
     Sleep, 750
-    ;Send, 2
-    ;Sleep, 750
+    Send, 2
+    Sleep, 750
     Send, 3
     Sleep, 750
     Send, 4
 Return
+
 #IfWinActive
 
 Close:

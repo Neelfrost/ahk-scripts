@@ -1,19 +1,25 @@
-#NoEnv ; Recommended for performance and compatibility with future AutoHotkey releases.
-; #Warn  ; Enable warnings to assist with detecting common errors.
-SendMode Input ; Recommended for new scripts due to its superior speed and reliability.
-SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
-#MaxThreadsPerHotkey, 2
+; ---------------------------------------------------------------------------- ;
+;                                  Spam melee                                  ;
+; ---------------------------------------------------------------------------- ;
 
+#MaxThreadsPerHotkey, 2
+#NoEnv
+SendMode Input
+SetWorkingDir %A_ScriptDir%
+
+; For toggle tooltip
 CoordMode, ToolTip, Client
 
-SetTimer, Close, 1000
 Toggle := False
+
+; Coroutine to kill script if Warframe is closed
+SetTimer, Close, 1000
+Return
 
 #IfWinActive, ahk_exe Warframe.x64.exe
 
 ; Suspend Script
-Media_Play_Pause::
-Suspend
+Media_Play_Pause::Suspend
 
 ; Hold e to spam melee
 $e::

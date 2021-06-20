@@ -1,21 +1,24 @@
 ; ---------------------------------------------------------------------------- ;
-;                         Collection of macros                        ;
+;                                  Main Macros                                 ;
 ; ---------------------------------------------------------------------------- ;
 
-#Persistent
-#NoEnv ; Recommended for performance and compatibility with future AutoHotkey releases.
-; #Warn  ; Enable warnings to assist with detecting common errors.
-SendMode Input ; Recommended for new scripts due to its superior speed and reliability.
-SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
-#SingleInstance, Force
 #KeyHistory 0
-; #UseHook
-; #InstallMouseHook
-; #InstallKeybdHook
+#MaxThreadsPerHotkey, 2
+#NoEnv
+#Persistent
+#SingleInstance, Force
+SendMode Input
+SetWorkingDir %A_ScriptDir%
+
+SetTitleMatchMode, 2
+
 ; # : Win, ! : Alt, ^ : Control, + : Shift
 
-GroupAdd, DelWord, ahk_exe neovide.exe
+; Filters to fix unintended behavior in nvim guis, photoshop
 GroupAdd, DelWord, ahk_exe Photoshop.exe
+GroupAdd, DelWord, ahk_exe neovide.exe
+GroupAdd, DelWord, ahk_exe nvim-qt.exe
+GroupAdd, DelWord, ahk_exe goneovim.exe
 
 ; Check if admin, if not re-run as admin
 if not A_IsAdmin
@@ -27,51 +30,55 @@ if not A_IsAdmin
     ExitApp
 }
 
-Menu, Tray, Icon, D:\Neel's Folder\Auto Hotkey Scripts\Icon\script.ico
+Menu, Tray, Icon, D:\My Folder\Auto Hotkey Scripts\Icon\keyboard.ico
 
 ; Function called on clipboard changed
 OnClipboardChange("Torrent")
 Return
-
-; #region global hotkeys
-; Center active window on Scroll Lock
-ScrollLock::CenterActiveWindow()
-
-; Rebind Mouse 4 to Middle Mouse button
-XButton1:: MButton
-
-; Maximize on Win+Shift+Up
-; Minimize on Win+Shift+Down
-#+Up::WinMaximize, A
-#+Down::WinMinimize, A
-
-; Rebind Capslock to Esc for vim, shift + capslock for normal capslock
-CapsLock::Esc
-+CapsLock::CapsLock
 
 ; Reload script alt+F12
 !F12::
     Reload
 Return
 
-; Launch WhatsApp calculator
+; Rebind Mouse 4 to Middle Mouse button
+XButton1:: MButton
+
+; Center active window
+NumLock::CenterActiveWindow()
+!NumLock::SetSize()
+
+; Maximize on Win+Shift+Up
+; Minimize on Win+Shift+Down
+#+Up::WinMaximize, A
+#+Down::WinMinimize, A
+
+; Rebind Esc to Capslock
+; Disable Capslock in vim
+; Use Shift + Capslock if Capslock is needed 
+CapsLock::Esc
+#IfWinNotActive, ahk_exe nvim-qt.exe
++CapsLock::CapsLock
+#IfWinNotActive
+
+; Launch WhatsApp
 Launch_App2::
-    Run, "C:\Users\Neel Basak\AppData\Local\WhatsApp\WhatsApp.exe"
+    Run, "C:\Users\Neel Basak\AppData\Roaming\OpenShell\Pinned\WhatsApp Desktop.lnk"
 Return
 
-; Launch Unity script reference alt+mail
+; Launch Unity script reference 
 !Launch_Mail::
     Run, "C:\Program Files\Unity\Hub\Editor\2020.1.0f1\Editor\Data\Documentation\en\ScriptReference\index.html"
 Return
 
-; Launch Gmail mail
+; Launch Gmail
 Launch_Mail::
     Run, "https://www.gmail.com/"
 Return
 
-; Launch Spotify alt+play
+; Launch Spotify 
 !Media_Play_Pause::
-    Run, "C:\Users\Neel Basak\AppData\Roaming\Spotify\Spotify.exe"
+    Run, "C:\Users\Neel Basak\AppData\Roaming\OpenShell\Pinned\Spotify.lnk"
 Return
 
 ; Disable Alt Acceleration
@@ -84,150 +91,29 @@ Return
     Sendinput {Blind}{sc0E9}
     KeyWait, RAlt ; so that it doesn't keep spamming SC0E9
 Return
-; #endregion
 
-; Fix unintended behavior in neovide, photoshop
 #IfWinNotActive, ahk_group DelWord
-; Delete word before cursor on ctrl + backspace
+; Delete word before cursor on ctrl + backspace, everywhere 
 ^BackSpace::
     Send, ^+{Left}{Del}
 Return
 
+; Delete word after cursor on ctrl + delete, everywhere
 ^Delete::
 Send, ^+{Right}{Del}
-Return 
+Return
+
+#IfWinActive, tex - Neovim
+NumpadEnter::
+Send, ^oo
+Return
 #IfWinNotActive
 
-; #region Functions
-; Added torrent to qbittorrent client using qbt-cli
-Torrent()
-{
-    if (InStr(Clipboard, "magnet:?xt") || InStr(Clipboard, ".torrent"))
-    {
-        Run %ComSpec% /c "qbt torrent add url "%Clipboard%"",, Hide
-        MsgBox, , Torrent Manager, Torrent added sucessfully, 2
-        Clipboard := ""
-    }
-    else
-        Return
-}
-
-; Centers active window
-; Taken and modified from:
-; https://superuser.com/questions/156351/keyboard-shortcut-in-windows-7-to-center-window
-CenterActiveWindow()
-{
-    ; Get min/max status of active window
-    WinGet, isMinimized, MinMax, A
-
-    ; center window if not max or min
-    if (isMinimized == 0)
-    {
-        ; Get the window handle from de active window.
-        winHandle := WinExist("A")
-
-        ; Get active window's width and height
-        WinGetPos, tempX, tempY, winW, winH, A
-
-        VarSetCapacity(monitorInfo, 40)
-        NumPut(40, monitorInfo)
-
-        ; Get the current monitor from the active window handle.
-        monitorHandle := DllCall("MonitorFromWindow", "uint", winHandle, "uint", 0x2)
-        DllCall("GetMonitorInfo", "uint", monitorHandle, "uint", &monitorInfo)
-
-        ; Get WorkArea bounding coordinates of the current monitor.
-        A_Left := NumGet(monitorInfo, 20, "Int")
-        A_Top := NumGet(monitorInfo, 24, "Int")
-        A_Right := NumGet(monitorInfo, 28, "Int")
-        A_Bottom := NumGet(monitorInfo, 32, "Int")
-
-        ; Calculate window coordinates.
-        winX := (A_Left + A_Right - winW) / 2
-        winY := (A_Top + A_Bottom - winH) / 2
-
-        ; MsgBox, %A_Left%`,%A_Top%`,%A_Right%`,%A_Bottom%`,%winX%`,%winY%,%winW%`,%winH%
-        WinMove, A,, winX, winY, winW, winH
-    }
-    else
-        Return
-}
-; #endregion
-
-; #region Premiere Pro Macros
-#IfWinActive, ahk_exe Adobe Premiere Pro.exe
-; Lock video -> cut, lock audio -> cut
-F4::
-    Send, {F1}
-    Sleep, 200
-    Send, w
-    Sleep, 200
-    Send, {F1}
-    Send, {F2}
-    Sleep, 200
-    Send, w
-    Sleep, 200
-    Send, {F2}
-Return
-
-; Lock video -> ripple delete
-F5::
-    Send, {F1}
-    Sleep, 200
-    Send, {F3}
-    Sleep, 200
-    Send, {F1}
-Return
-
-; Mouse button 5 -> Delete
-XButton2::Delete
-; #endregion
-
-; #region Space Engineer's Macros
-#IfWinActive, ahk_exe SpaceEngineers.exe
-; Selects hotbar item on ctrl+scroll
-cycle:=0
-^WheelUp::
-    cycle-- ; subtract 1 from the cycle
-    If cycle < 1
-        cycle := 9
-    SendEvent, ^{%cycle% Down}
-    Sleep, 50
-    SendEvent, ^{%cycle% Up}
-Return
-
-^WheelDown::
-    cycle++ ; add 1 to the cycle
-    If cycle > 9
-        cycle := 1
-    SendEvent, ^{%cycle% Down}
-    Sleep, 50
-    SendEvent, ^{%cycle% Up}
-Return
-; #endregion
-
-; #region Notion Macros
-#IfWinActive, ahk_exe Notion.exe
-; Insert chem format
-^t::
-    Send, ^+e
-    Sleep, 50
-    Send, {Home}
-    Send, {Text}\ce{
-    Send, {End}
-    Send, {Text}}
-    Send, {Enter}
-    Sleep, 200
-    Send, {Space}
-Return
-
-; Bold + italics
-^e::
-    Send, ^i
-    Send, ^b
-    Send, {End}
-Return
-; #endregion
+#Include, D:\My Folder\Auto Hotkey Scripts\Macros\functions.ahk
+#Include, D:\My Folder\Auto Hotkey Scripts\Macros\premiere.ahk
+#Include, D:\My Folder\Auto Hotkey Scripts\Macros\space.ahk
+#Include, D:\My Folder\Auto Hotkey Scripts\Macros\notion.ahk
+#Include, D:\My Folder\Auto Hotkey Scripts\Macros\hotstrings.ahk
 
 ; Reset Application specific macros
 #IfWinActive
