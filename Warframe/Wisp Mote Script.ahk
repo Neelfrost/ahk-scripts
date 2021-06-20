@@ -1,17 +1,22 @@
-#NoEnv ; Recommended for performance and compatibility with future AutoHotkey releases.
-; #Warn  ; Enable warnings to assist with detecting common errors.
-SendMode Input ; Recommended for new scripts due to its superior speed and reliability.
-SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
+; ---------------------------------------------------------------------------- ;
+;                             Place all wisp motes                             ;
+; ---------------------------------------------------------------------------- ;
 
+#MaxThreadsPerHotkey, 2
+#NoEnv
+SendMode Input
+SetWorkingDir %A_ScriptDir%
+
+; Coroutine to kill script if Warframe is closed
 SetTimer, Close, 1000
+Return
 
 #IfWinActive, ahk_exe Warframe.x64.exe
 
 ; Suspend Script
-Media_Play_Pause::
-Suspend
+Media_Play_Pause::Suspend
 
-; Place All Motes on 1
+; Place all motes on 1
 ; Modifier key (shift, ctrl, alt) + 1 uses default behavior
 $1::
     Loop, 3
@@ -22,8 +27,9 @@ $1::
         Sleep, 600 ; ability hold time, change if required
         Send, 1
         Sleep, 250 ; delay next cast
-    } 
+    }
 Return
+
 #IfWinActive
 
 Close:

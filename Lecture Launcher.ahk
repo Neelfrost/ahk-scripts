@@ -2,14 +2,14 @@
 ;     Launches Google Meet Link or opens Microsoft Teams at specified time     ;
 ; ---------------------------------------------------------------------------- ;
 
-#SingleInstance, Off
+#KeyHistory 0
+#NoEnv
 #Persistent
-#NoEnv ; Recommended for performance and compatibility with future AutoHotkey releases.
-; #Warn  ; Enable warnings to assist with detecting common errors.
-SendMode Input ; Recommended for new scripts due to its superior speed and reliability.
-SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
+#SingleInstance, Off
+SendMode Input
+SetWorkingDir %A_ScriptDir%
 
-Menu, Tray, Icon, D:\Neel's Folder\Auto Hotkey Scripts\Icon\clock.ico
+Menu, Tray, Icon, D:\My Folder\Auto Hotkey Scripts\Icon\clock.ico
 
 thisHour := 0
 _Hour := 0
@@ -34,7 +34,7 @@ If (!_Link){
 }
 
 ButtonOK:
-    Gui, Submit 
+    Gui, Submit
     Gui, Destroy
     Menu, Tray, Tip, Lecture at %_Hour%:%_Min%
 Return
